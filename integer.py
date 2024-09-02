@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+"""Represent the mathematical concept of an integer as a Python object."""
 
 
 def is_prime(z: int) -> bool:
@@ -8,9 +7,13 @@ def is_prime(z: int) -> bool:
     This particular implementation is from http://stackoverflow.com/a/27946768.
 
     Args:
+    ----
         z (int): Integer the primality of which to ascertain
+
     Returns:
+    -------
         (bool): Whether `z` is prime
+
     """
     if not isinstance(z, int) or z < 0:
         return False  # One day, extension to negative integers will happen...
@@ -18,11 +21,7 @@ def is_prime(z: int) -> bool:
     if z <= 1:
         return False
 
-    for n in range(2, int(z**0.5 + 1)):
-        if not z % n:
-            return False
-    else:
-        return True
+    return all(z % n for n in range(2, int(z**0.5 + 1)))
 
 
 def decompose(n: int) -> dict:
@@ -31,7 +30,6 @@ def decompose(n: int) -> dict:
     The dict is of the form of "prime: power". Source of the
     implementation: http://stackoverflow.com/a/412942/4747798
     """
-
     if n < 2:
         return {}
 
@@ -51,7 +49,8 @@ def decompose(n: int) -> dict:
 
 
 def sequence():
-    """Generate the following sequence:
+    """Generate the following sequence.
+
     0, 1, -2, 3, -4, 5, -6, 7, -8, ...
     """
     n = 1
@@ -75,7 +74,7 @@ def fibonacci_sequence():
 
 def generate_primes():
     """Sieve of Eratosthenes variation to generate primes."""
-    found: list = list()
+    found: list = []
     candidate: int = 2
     while True:
         if all(candidate % prime for prime in found):
@@ -86,6 +85,7 @@ def generate_primes():
 
 class Integer(int):
     """A Python object to represent a mathematical integer.
+
     It features a superset of the methods of built-in int, and
     only uses Python 3 built-ins.
 
@@ -155,11 +155,11 @@ class Integer(int):
     #     "_proper_divisors",
     # )
 
-    def __init__(self, num):
+    def __init__(self, num: int):
         try:
             self.num = int(num)
-        except (OverflowError, TypeError, ValueError):
-            raise ValueError("Integer must be finite and numeric")
+        except (OverflowError, TypeError, ValueError) as exc:
+            raise ValueError("Integer must be finite and numeric") from exc
 
         # Values to "cache" for property and method calculations
         self._decomposition: dict = decompose(num)
@@ -232,12 +232,16 @@ class Integer(int):
 
     @staticmethod
     def gcd(a: int, b: int) -> int:
-        """Greatest common divisor of two integers is the integer n that
+        """Return the greatest common divisor between a and b.
+
+        The Greatest common divisor of two integers is the integer n that
         satisfies max({n: a%n=0 & b%n=0, n <= a <= b})
         Args:
+        ----
             a (int): first integer to compare
             b (int): second integer to compare
         Returns:
+        -------
             (int): the largest integer between (inclusive) `a` and `b`
                 such that it divides `a` and `b`
         """
@@ -246,9 +250,11 @@ class Integer(int):
         return a
 
     def is_perfect_power(self, k: int) -> bool:
-        """Returns whether the Integer is a perfect k-power e.g. perfect
-        square (k=2), perfect cube (k=3), etc. Is only defined for k > 0
-        E.g. Integer(16).is_perfect_power(2) is True because 4**2 == 16
+        """Return whether the Integer is a perfect k-power.
+
+        I.e., perfect square (k=2), perfect cube (k=3), etc. Is only defined
+        for k > 0. E.g. Integer(16).is_perfect_power(2) is True because
+        4**2 == 16
 
         Args:
             k (int): power to check; i.e., is Integer() ** 1/k an integer?
@@ -265,9 +271,11 @@ class Integer(int):
         return all(x % k == 0 for x in self.decomposition.values())
 
     def is_power_of(self, n: int) -> bool:
-        """Is the integer, z, a power of n? I.e. z is a power of n if and
-        only if z = n**k for some integers n>0, k. For example, 8 is a
-        power of 2 because 8 = 2**3. Only implemented for positive integers
+        """Return whether self.num is a power of n.
+
+        I.e. z is a power of n if and only if z = n**k for some integers n>0, k.
+        For example, 8 is a power of 2 because 8 = 2**3. Only implemented for
+        positive integers
         Args:
             n (int): positive integer to be tested whether Integer() is a
                 power of
@@ -276,22 +284,22 @@ class Integer(int):
         """
         if self.num < 0:
             raise NotImplementedError
-        elif self.num < n:
+        if self.num < n:
             return False
-        elif self.num == 0:
+        if self.num == 0:
             return False  # No exponentiation can result in 0
-        elif self.num == 1:
+        if self.num == 1:
             return True  # 1 is the zero-power of any given n
-        elif self.num == n:
+        if self.num == n:
             return True
 
         if n < 0:
             raise ValueError
-        elif n == 0:
+        if n == 0:
             # Already know that z != 0 because logic has gotten to this point
             # There is no other such integer that is a zero-power of anything
             return False
-        elif n == 1:
+        if n == 1:
             # Already know that z != 1 because logic has gotten to this point
             # There is no other integer such that self is a power of 1
             return False
@@ -302,7 +310,7 @@ class Integer(int):
             k += 1
             nk: int = n**k
 
-        return True if nk == self.num else False
+        return nk == self.num
 
     @property
     def abundance(self):
@@ -360,7 +368,6 @@ class Integer(int):
         less than d such that n % d is 0. Equivalently, there exists
         some integer, k, such that d * k == n.
         """
-
         return set(map(Integer, self._divisors))
 
     @property
@@ -376,14 +383,13 @@ class Integer(int):
     def factorial(self):
         if self.num < 0:
             raise ValueError("Factorial is not defined for negative integers")
-        elif self.num == 0:
+        if self.num == 0:
             return Integer(1)
-        else:
 
-            def _factorial(n: int) -> int:
-                return 1 if n < 1 else n * _factorial(n - 1)
+        def _factorial(n: int) -> int:
+            return 1 if n < 1 else n * _factorial(n - 1)
 
-            return Integer(_factorial(self.num))
+        return Integer(_factorial(self.num))
 
     @property
     def factorization(self) -> str:
@@ -398,14 +404,13 @@ class Integer(int):
 
         I.e., the representation of an even number as a sum of two primes.
         """
-
         if self.parity == "Odd":
             return set()
-        return set(
+        return {
             (Integer(p), Integer(self.num - p))
             for p in range(2, self.num // 2 + 1)
             if is_prime(p) and is_prime(self.num - p)
-        )
+        }
 
     @property
     def is_abundant(self) -> bool:
@@ -436,7 +441,7 @@ class Integer(int):
             preceding_prime_candidate -= 1
 
         distance_from_z: int = self.num - preceding_prime_candidate
-        return True if is_prime(self.num + distance_from_z) else False
+        return is_prime(self.num + distance_from_z)
 
     @property
     def is_cullen(self) -> bool:
@@ -454,8 +459,7 @@ class Integer(int):
             k += 1
             candidate: int = k * 2**k
             continue
-        else:
-            return False
+        return False
 
     @property
     def is_cullen_prime(self) -> bool:
@@ -474,7 +478,7 @@ class Integer(int):
         less than 2*n.
         """
         return self._deficiency > 0
-    
+
     @property
     def is_fibonacci(self) -> bool:
         """Return whether self.num is a member of the Fibonacci sequence.
@@ -485,7 +489,7 @@ class Integer(int):
         f: int = next(_fs)
         while f < self.num:
             f: int = next(_fs)
-        
+
         return f == self.num
 
     @property
@@ -525,7 +529,7 @@ class Integer(int):
         """
         if self.num < 1:
             return False
-        elif self.num == 1:
+        if self.num == 1:
             return True
         return all(exponent < 2 for exponent in self.decomposition.values())
 
@@ -541,10 +545,59 @@ class Integer(int):
         if self.num > 658:
             raise NotImplementedError
         if self.num in {
-            2, 5, 52, 88, 96, 120, 124, 146, 162, 188, 206, 210, 216, 238, 246,
-            248, 262, 268, 276, 288, 290, 292, 304, 306, 322, 324, 326, 336,
-            342, 372, 406, 408, 426, 430, 448, 472, 474, 498, 516, 518, 520,
-            530, 540, 552, 556, 562, 576, 584, 612, 624, 626, 628, 658
+            2,
+            5,
+            52,
+            88,
+            96,
+            120,
+            124,
+            146,
+            162,
+            188,
+            206,
+            210,
+            216,
+            238,
+            246,
+            248,
+            262,
+            268,
+            276,
+            288,
+            290,
+            292,
+            304,
+            306,
+            322,
+            324,
+            326,
+            336,
+            342,
+            372,
+            406,
+            408,
+            426,
+            430,
+            448,
+            472,
+            474,
+            498,
+            516,
+            518,
+            520,
+            530,
+            540,
+            552,
+            556,
+            562,
+            576,
+            584,
+            612,
+            624,
+            626,
+            628,
+            658,
         }:
             _is_untouchable: bool = True
         return _is_untouchable
@@ -586,18 +639,15 @@ class Integer(int):
         Returns:
             (tuple)
         """
-
         if self.num <= 1:
             return (2,)
-        elif self.primality == "Prime":
+        if self.primality == "Prime":
             return (self.num,)
-        else:
-            z, s = self.num, sequence()
+        z, s = self.num, sequence()
 
         while not is_prime(z):
             z += next(s)
-        else:
-            nearest: int = z - self.num
+        nearest: int = z - self.num
 
         # Is there another prime equidistant?
         return (
@@ -618,7 +668,7 @@ class Integer(int):
 
     @property
     def parity(self) -> str:
-        """Return whether integer is even or odd"""
+        """Return whether integer is even or odd."""
         return self._parity
 
     @property
@@ -628,7 +678,6 @@ class Integer(int):
         This is the output of the Prime Counting Function with self.num
         as the argument.
         """
-
         return Integer(sum(1 for z in range(2, self.num + 1) if is_prime(z)))
 
     @property
@@ -643,7 +692,6 @@ class Integer(int):
         For the integer 'n', a positive divisor of n that is different from
         n is called a proper divisor or an aliquot part of n.
         """
-
         return self._proper_divisors
 
     @property
@@ -652,11 +700,10 @@ class Integer(int):
         z = self.num
         if self.is_squarefree:
             return Integer(z)
-        else:
-            product = 1
-            for prime_factor in self.decomposition.keys():
-                product *= prime_factor
-            return Integer(product)
+        product = 1
+        for prime_factor in self.decomposition:
+            product *= prime_factor
+        return Integer(product)
 
     @property
     def sigma(self):
@@ -683,13 +730,12 @@ class Integer(int):
 
         if self.num <= 0:
             return Integer(0)
-        elif self.num == 1:
+        if self.num == 1:
             return Integer(1)
-        else:
-            product: int = 1
-            for z in self.decomposition.values():
-                product *= z + 1
-            return Integer(product)
+        product: int = 1
+        for z in self.decomposition.values():
+            product *= z + 1
+        return Integer(product)
 
     @property
     def totatives(self) -> set:
@@ -703,7 +749,7 @@ class Integer(int):
 
 
 def nth_most_divisors(n: int) -> int:
-    """This function returns the nth highly-composite number.
+    """Return the nth highly-composite number.
 
     I.e., natural number with nth most divisors. E.g. 1 is the 1st HCN
     because no natural number has more factors; 2 is the second HCN because
@@ -711,11 +757,11 @@ def nth_most_divisors(n: int) -> int:
     More info at https://oeis.org/A002182.
 
     Args:
+    ----
         n (int): The element in Highly Composite Numbers sequence to return
     Returns:
         (int): the integer in position `n` in the Highly Composite Numbers seq
     """
-
     if n == 1:
         return 1
     record: list = [1]
@@ -729,14 +775,12 @@ def nth_most_divisors(n: int) -> int:
             record.append(dz)
             if len(record) == n:
                 break
-            else:
-                z += 1
-                continue
-        elif dz == max(record):
             z += 1
             continue
-        else:
+        if dz == max(record):
             z += 1
             continue
+        z += 1
+        continue
 
     return z
