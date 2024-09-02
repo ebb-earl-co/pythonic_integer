@@ -30,19 +30,20 @@ def decompose(n: int) -> dict:
     The dict is of the form of "prime: power". Source of the
     implementation: http://stackoverflow.com/a/412942/4747798
     """
-    if n < 2:
+    _n = int(n)
+    if _n < 2:
         return {}
 
     factors: list = []
     d: int = 2
-    while n > 1:
-        while n % d == 0:
+    while _n > 1:
+        while _n % d == 0:
             factors.append(d)
-            n /= d
+            _n /= d
         d: int = d + 1
-        if d * d > n:
-            if n > 1:
-                factors.append(n)
+        if d * d > _n:
+            if _n > 1:
+                factors.append(_n)
             break
 
     return {int(f): int(factors.count(f)) for f in set(factors)}
@@ -83,7 +84,7 @@ def generate_primes():
         candidate += 1
 
 
-class Integer(int):
+class Integer:
     """A Python object to represent a mathematical integer.
 
     It features a superset of the methods of built-in int, and
@@ -114,47 +115,6 @@ class Integer(int):
     property `primality`.
     """
 
-    # For subclass of 'int', __slots__ is not supported!
-    # __slots__: tuple = (
-    #     "num",
-    #     "aliquot_sum",
-    #     "binary",
-    #     "decomposition",
-    #     "divisors",
-    #     "euler_totient",
-    #     "factorial",
-    #     "factorization",
-    #     "goldbach_partitions",
-    #     "is_abundant",
-    #     "is_balanced_prime",
-    #     "is_cullen",
-    #     "is_cullen_prime",
-    #     "is_deficient",
-    #     "is_fibonacci",
-    #     "is_mersenne",
-    #     "is_mersenne_prime",
-    #     "is_perfect",
-    #     "is_squarefree",
-    #     "is_woodall",
-    #     "is_woodall_prime",
-    #     "nearest_prime",
-    #     "omega",
-    #     "parity",
-    #     "pi",
-    #     "primality",
-    #     "sigma",
-    #     "tau",
-    #     "totatives",
-    #     "Omega",
-    #     "_abundance",
-    #     "_decomposition",
-    #     "_deficiency",
-    #     "_whether_prime",
-    #     "_parity",
-    #     "_divisors",
-    #     "_proper_divisors",
-    # )
-
     def __init__(self, num: int):
         try:
             self.num = int(num)
@@ -162,19 +122,19 @@ class Integer(int):
             raise ValueError("Integer must be finite and numeric") from exc
 
         # Values to "cache" for property and method calculations
-        self._decomposition: dict = decompose(num)
-        self._whether_prime: bool = is_prime(num)
-        self._parity: str = "Odd" if num % 2 else "Even"
+        self._decomposition: dict = decompose(self.num)
+        self._whether_prime: bool = is_prime(self.num)
+        self._parity: str = "Odd" if self.num % 2 else "Even"
         if self._whether_prime:
-            self._divisors: set = {1, num}
+            self._divisors: set = {1, self.num}
         else:
             _sqrt: int = int(num**0.5) + 1
-            self._divisors: set = {n for n in range(1, _sqrt) if num % n == 0} | {
-                num // n for n in range(1, _sqrt) if num % n == 0
+            self._divisors: set = {n for n in range(1, _sqrt) if self.num % n == 0} | {
+                num // n for n in range(1, _sqrt) if self.num % n == 0
             }
-        self._proper_divisors: set = self._divisors - {num}
-        self._abundance: int = sum(self._proper_divisors) - num
-        self._deficiency: int = num - sum(self._proper_divisors)
+        self._proper_divisors: set = self._divisors - {self.num}
+        self._abundance: int = sum(self._proper_divisors) - self.num
+        self._deficiency: int = self.num - sum(self._proper_divisors)
 
     def __repr__(self) -> str:
         return "Integer({!r})".format(self.num)
@@ -263,7 +223,7 @@ class Integer(int):
         """
         if k <= 0:
             raise ValueError("Perfect negative power is not defined")
-        elif k == 1:
+        if k == 1:
             return True  # Trivial
         if self.num == 0:
             return True  # zero to any k is zero
@@ -336,7 +296,8 @@ class Integer(int):
 
         If prefix=True, the string has prefix '0b' for positive self.num,
         and prefix '-0b' for negative self.num. Otherwise, return a str
-        of the binary representation of self.num."""
+        of the binary representation of self.num.
+        """
         return f"{self.num:#b}" if prefix else f"{self.num:b}"
 
     @property
@@ -395,7 +356,7 @@ class Integer(int):
     def factorization(self) -> str:
         """Return quasi-human-readable rendering of prime decomposition."""
         return " * ".join(
-            (str(k) + "^" + str(v) for k, v in self.decomposition.items())
+            (str(k) + "^" + str(v) for k, v in self.decomposition.items()),
         )
 
     @property
