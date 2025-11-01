@@ -23,22 +23,15 @@ in order to test and learn _new_ concepts: in this case,
 [`uv`](https://github.com/astral-sh/uv?tab=readme-ov-file#highlights):
 > An extremely fast Python package and project manager, written in Rust
 
-If, like me, you want to embrace and/or test a new tool, `uv` is
-_seriously_ fast, so you won't waste much time doing so!
-
-The [installation instructions for `uv`](https://github.com/astral-sh/uv?tab=readme-ov-file#installation)
-for `uv` point out that there is a compiled release for most
-platforms, so download that.
-
-Then, go to the directory where this project was cloned, and,
+Go to the directory where this project was cloned, and,
 inside that directory, run your variant (i.e., Unix-like or Windows)
 of the terminal command:
 ```shell
-uv sync
+uv sync --all-extras
 ```
 
 That's it! This project will be developed with the newest stable
-version of Python (at the time of writing: 3.12.5), but all
+version of Python (at the time of writing: 3.14.0), but all
 non-deprecated versions of Python 3 will work just fine.
 
 # Testing
@@ -52,10 +45,12 @@ PS> python.exe -m pytest -v test\
 ```
 if you're using Windows.
 ## For the Enthusiast
-If you're trailblazing with `uv`, it is a tool that very much
-wants to be the center of installation, environment, packaging,
-and execution actions. So, the following is the command to run
+If you're trailblazing with `uv`, the following is the command to run
 the test suite:
 ```bash
-$ uv run python3 -m pytest -v test/
+$ uv run -m pytest
+```
+on Windows:
+```powershell
+PS> uv.exe run -m pytest
 ```
