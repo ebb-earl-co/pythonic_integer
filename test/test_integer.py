@@ -358,6 +358,34 @@ def test_is_woodall_prime(z):
     else:
         assert not Integer(z).is_woodall_prime
 
+@given(st.integers(max_value=1e4))
+def test_is_balanced_prime(z):
+    def generate_primes_before_n(n):
+        p = generate_primes()
+        largest_so_far = next(p)
+        while largest_so_far < n:
+            yield largest_so_far
+            largest_so_far = next(p)
+
+    def generate_primes_after_n(n):
+        p = generate_primes()
+        largest_so_far = next(p)
+        while largest_so_far < n:
+            largest_so_far = next(p)
+
+        yield largest_so_far
+        while True:
+            yield next(p)
+
+    preceding_prime = max(generate_primes_before_n(z))
+    succeeding_prime = next(generate_primes_after_n(z))
+    if z - closest_before_z == closest_after_z - z:
+        if is_prime(z):
+            assert Integer(z).is_balanced_prime
+        else:
+            assert not Integer(z).is_balanced_prime
+    else:
+        assert not Integer(z).is_balanced_prime
 
 @given(st.integers(max_value=1e4))
 def test_is_cullen(z):

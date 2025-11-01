@@ -1,17 +1,56 @@
 # pythonic_integer
 
-Implement a class that has all of the features and characteristics
-of the mathematical object "integer", without importing _any_ module.
+Implement a class that has all\* of the features and characteristics
+of the mathematical object "integer", without importing _anything_.
 
-## Testing
-To start, you'll need [pipenv](https://docs.pipenv.org/) from either
-Homebrew or `pip`. Then, clone the repo and from the repo root, run 
-```bash
-pipenv install --dev
+# Installation
+First, clone the repository:
 ```
-This will install the packages specified in Pipfile into a virtual
-environment, and activate that virtual environment. Then, to run
-the test suite, execute the following:
+git clone https://github.com/ebb-earl-co/pythonic_integer.git
+```
+
+
+## Installation of Optional Packages for Testing
+This package does not have any dependencies! ...unless you
+want to execute the unit tests in the `test/` directory, _then_ you
+will need `hypothesis`, `pytest`, and `more-itertools`. So, however
+you want to invoke `pip`, everything you need for the **full
+experience** is readily available on PyPi.
+
+### For the Enthusiast
+Part of the purpose of this package is to use a well-known concept
+in order to test and learn _new_ concepts: in this case,
+[`uv`](https://github.com/astral-sh/uv?tab=readme-ov-file#highlights):
+> An extremely fast Python package and project manager, written in Rust
+
+Go to the directory where this project was cloned, and,
+inside that directory, run your variant (i.e., Unix-like or Windows)
+of the terminal command:
+```shell
+uv sync --all-extras
+```
+
+That's it! This project will be developed with the newest stable
+version of Python (at the time of writing: 3.14.0), but all
+non-deprecated versions of Python 3 will work just fine.
+
+# Testing
+To run the test suite, execute the following:
 ```bash
-pipenv run python -m pytest -v test/
+$ python3 -m pytest -v test/
+```
+if you're using a Unix-like system, or
+```powershell
+PS> python.exe -m pytest -v test\
+```
+if you're using Windows.
+## For the Enthusiast
+If you're trailblazing with `uv`, the following is the command to run
+the test suite:
+```bash
+$ uv run -m pytest
+```
+on Windows:
+```powershell
+PS> uv.exe run -m pytest
 ```
