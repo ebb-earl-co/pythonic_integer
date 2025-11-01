@@ -125,7 +125,8 @@ class Integer:
         self._decomposition: dict = decompose(self.num)
         self._whether_prime: bool = is_prime(self.num)
         self._parity: str = "Odd" if self.num % 2 else "Even"
-        if self._whether_prime:
+        if self._whether_prime or self.num < 0:
+            # account for negative integers' square root problem
             self._divisors: set = {1, self.num}
         else:
             _sqrt: int = int(num**0.5) + 1
