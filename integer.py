@@ -122,10 +122,13 @@ class Integer:
             raise ValueError("Integer must be finite and numeric") from exc
 
         # Values to "cache" for property and method calculations
+        self._trivial_divisors: set = {-1, -self.num, 1, self.num}
         self._decomposition: dict = decompose(self.num)
         self._whether_prime: bool = is_prime(self.num)
         self._parity: str = "Odd" if self.num % 2 else "Even"
-        if self._whether_prime:
+        if self.num < 0:
+            self._divisors = set()
+        elif self._whether_prime:
             self._divisors: set = {1, self.num}
         else:
             _sqrt: int = int(num**0.5) + 1
@@ -196,14 +199,17 @@ class Integer:
 
         The Greatest common divisor of two integers is the integer n that
         satisfies max({n: a%n=0 & b%n=0, n <= a <= b})
+
         Args:
         ----
             a (int): first integer to compare
             b (int): second integer to compare
+
         Returns:
         -------
             (int): the largest integer between (inclusive) `a` and `b`
                 such that it divides `a` and `b`
+
         """
         while b:
             a, b = b, a % b
@@ -217,9 +223,13 @@ class Integer:
         4**2 == 16
 
         Args:
+        ----
             k (int): power to check; i.e., is Integer() ** 1/k an integer?
+
         Returns:
+        -------
             (bool)
+
         """
         if k <= 0:
             raise ValueError("Perfect negative power is not defined")
@@ -248,10 +258,8 @@ class Integer:
             return False
         if self.num == 0:
             return False  # No exponentiation can result in 0
-        if self.num == 1:
+        if self.num == 1 or self.num == n:  # noqa: PLR1714
             return True  # 1 is the zero-power of any given n
-        if self.num == n:
-            return True
 
         if n < 0:
             raise ValueError
