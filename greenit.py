@@ -1,7 +1,7 @@
-from collections import Counter
 from decimal import Decimal
 from fractions import Fraction
 from functools import cache
+from itertools import groupby
 from math import isqrt
 from numbers import Number
 from typing import Iterator
@@ -49,6 +49,25 @@ def canonical_form(n: Number) -> str:
     return " * ".join(f"{p}{superscript_map[e]}" for (p, e) in prime_power_pairs)
 
 
+def generate_prime_factors(z: int) -> Iterator[int]:
+    """Give back the (maybe repeated) prime factors of `z` as generator."""
+    while z & 1 == 0:
+        yield 2
+        z //= 2
+
+    # odd numbers from 3 to sqrt(z) because prime factors are <= sqrt(z)
+    odds: Iterator[int] = (n for n in range(3, isqrt(z) + 1, 2))
+    for o in odds:
+        # call z/o the name q (quotient). If q is an integer, then o is a divisor of z
+        while (q := z / o).is_integer():
+            yield o
+            # proceed with q as the new z
+            z = int(q)
+
+    if z > 1:
+        yield z
+
+
 @cache
 def decompose(n: Number) -> tuple[tuple[()], ...] | tuple[tuple[int, int], ...]:
     """Decompose an integer into the product of its prime powers."""
@@ -80,27 +99,6 @@ def decompose(n: Number) -> tuple[tuple[()], ...] | tuple[tuple[int, int], ...]:
     if z == 2:
         return ((2, 1),)
 
-    # TODO: use itertools.groupby here for memory savings (at least, for composites)
-    # timings between this method and groupby method are almost identical for primes
-    ctr: Counter[int] = Counter()
-
-    # if `z` is even, divide `z` by 2 and keep track how many divisions before `z` becomes odd
-    while z & 1 == 0:
-        ctr.update((2,))
-        z //= 2
-
-    # odd numbers from 3 to sqrt(z); N.b., will never get to the end of
-    # this range because `z` is iteratively decremented
-    candidates: Iterator[int] = (n for n in range(3, isqrt(z) + 1, 2))
-    for o in candidates:
-        # call z/o the name q (quotient). If q is an integer, then o is a divisor of z
-        while (q := z / o).is_integer():
-            # record o as a factor, or increment the count of o as a factor
-            ctr.update((o,))
-            # proceed with q as the new z
-            z = int(q)
-
-    if z > 1:
-        ctr.update((z,))
-
-    return tuple(ctr.items())
+    return tuple(
+        (p, sum(1 for _ in group)) for p, group in groupby(generate_prime_factors(z))
+    )
