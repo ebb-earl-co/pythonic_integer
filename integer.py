@@ -15,11 +15,11 @@ def is_prime(z: int) -> bool:
         (bool): Whether `z` is prime
 
     """
-    if not isinstance(z, int) or z < 0:
-        return False  # One day, extension to negative integers will happen...
-
-    if z <= 1:
+    if not isinstance(z, int) or z < 2:
         return False
+
+    if z == 2:
+        return True
 
     return all(z % n for n in range(2, int(z**0.5 + 1)))
 
