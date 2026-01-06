@@ -1,13 +1,13 @@
 [project]
 name = "pythonic-integer"
-version = "0.1.0"
-description = "A class representing the mathematical concept of an integer using only the Python built-ins: no 'import' allowed!"
+version = "0.2.0"
+description = "A class representing the mathematical concept of an integer using only the Python built-ins."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = []
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
   "hypothesis",
   "more-itertools",
   "pytest",
